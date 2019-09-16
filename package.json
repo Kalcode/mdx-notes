@@ -3,9 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@babel/standalone": "^7.6.0",
+    "@mdx-js/mdx": "^1.4.5",
+    "@mdx-js/react": "^1.4.5",
+    "@mdx-js/runtime": "^1.4.5",
+    "buble": "^0.19.8",
+    "golden-layout": "^1.5.9",
+    "lodash": "^4.17.15",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
-    "react-scripts": "3.1.1"
+    "react-scripts": "3.1.1",
+    "requirejs-babel-plugin": "^0.5.0"
   },
   "scripts": {
     "start": "react-scripts start",
