@@ -33,22 +33,37 @@ export default ({
     return error.message;
   }
 
-  const {code} = transform(jsx, {
-    objectAssign: 'Object.assign'
-  })
+  let code;
+
+  try {
+    const result = transform(jsx, {
+      objectAssign: 'Object.assign'
+    })   
+
+    code = result.code;
+  } catch(error) {
+    return error.message;
+  }
 
   const keys = Object.keys(fullScope)
   const values = Object.values(fullScope)
-  // eslint-disable-next-line no-new-func
-  const fn = new Function(
-    '_fn',
-    'React',
-    ...keys,
-    `${code}
-    return React.createElement(MDXProvider, { components },
-      React.createElement(MDXContent, props)
-    );`
-  )
+  
+  try {
+    // eslint-disable-next-line no-new-func
+    const fn = new Function(
+      '_fn',
+      'React',
+      ...keys,
+      `${code}
+      return React.createElement(MDXProvider, { components },
+        React.createElement(MDXContent, props)
+      );`
+    )
 
-  return fn({}, React, ...values)
+    return fn({}, React, ...values);
+  } catch(error) {
+    return error.message;
+  }
 }
+
+{/* <div style={{ stes: s}}/> */}

@@ -7,7 +7,10 @@ export default class ErrorBoundary extends Component {
   }
 
   static getDerivedStateFromError(error) {
-    return { hasError: true };
+    return { 
+      error,
+      hasError: true,
+    };
   }
 
   componentDidCatch(error, errorInfo) {
@@ -17,7 +20,6 @@ export default class ErrorBoundary extends Component {
 
   componentDidUpdate(prevProps, preState) {
     if (prevProps.resetCheck !== this.props.resetCheck) {
-      console.log('checking ', this.props.resetCheck);
       this.setState({
         hasError: false,
       })
@@ -25,9 +27,18 @@ export default class ErrorBoundary extends Component {
   }
 
   render() {
-    if (this.state.hasError) {
+    const { hasError, error } = this.state;
+
+    if (hasError && (!error || !error.message)) {
       // You can render any custom fallback UI
       return <h1>Something went wrong.</h1>;
+    } else if (hasError) {
+      return (
+        <div>
+          <pre>{error.toString()}</pre>
+          <pre style={{ whiteSpace: "pre-wrap" }}>{error.stack}</pre>
+        </div>
+      );
     }
 
     return this.props.children; 
