@@ -10,10 +10,10 @@ export default function MDXEditor({ updateMdx }) {
       <textarea
         style={{ height: 500 , width: '100%' }}
         onChange={({ target }) => {
-          updateMdx(target.value)
+          updateMdx(target.value);
         }}
         value={value}
       />
     </div>
-  )
+  );
 }

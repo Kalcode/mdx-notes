@@ -1,11 +1,11 @@
-import React from 'react'
-import {transform} from 'buble'
-import mdx from '@mdx-js/mdx'
-import {MDXProvider, mdx as createElement} from '@mdx-js/react'
+import React, { useContext } from 'react';
+import {transform} from 'buble';
+import mdx from '@mdx-js/mdx';
+import {MDXProvider, mdx as createElement} from '@mdx-js/react';
 
 export default ({
-  scope = {},
   components = {},
+  scope = {},
   remarkPlugins = [],
   rehypePlugins = [],
   children,
@@ -17,9 +17,11 @@ export default ({
     components,
     props,
     ...scope
-  }
+  };
 
   let jsx;
+
+  console.log(components);
 
   try {
     jsx = mdx
@@ -28,7 +30,7 @@ export default ({
       rehypePlugins,
       skipExport: true
     })
-    .trim()
+    .trim();
   } catch(error) {
     return error.message;
   }
@@ -38,15 +40,15 @@ export default ({
   try {
     const result = transform(jsx, {
       objectAssign: 'Object.assign'
-    })   
+    });   
 
     code = result.code;
   } catch(error) {
     return error.message;
   }
 
-  const keys = Object.keys(fullScope)
-  const values = Object.values(fullScope)
+  const keys = Object.keys(fullScope);
+  const values = Object.values(fullScope);
   
   try {
     // eslint-disable-next-line no-new-func
@@ -58,12 +60,12 @@ export default ({
       return React.createElement(MDXProvider, { components },
         React.createElement(MDXContent, props)
       );`
-    )
+    );
 
     return fn({}, React, ...values);
   } catch(error) {
     return error.message;
   }
-}
+};
 
-{/* <div style={{ stes: s}}/> */}
+/* <div style={{ stes: s}}/> */

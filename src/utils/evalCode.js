@@ -1,35 +1,41 @@
-import * as Babel from "@babel/standalone";
+import * as Babel from '@babel/standalone';
 
-import requireFunc from "./require";
-import { fileManager } from "./fileManager";
-import { ScopedLocalStorage } from "./scopedLocalStorage/scopedLocalStorage";
+import requireFunc from './require';
+import { fileManager } from './fileManager';
+import { ScopedLocalStorage } from './scopedLocalStorage/scopedLocalStorage';
 
 export default function evalCode(code, moduleName) {
   const transformedCode = Babel.transform(code, {
     plugins: [],
-    presets: ["es2015", "react"],
+    presets: ['es2015', 'react'],
   }).code;
 
   const exportsObject = {};
 
   // eslint-disable-next-line no-new-func
-  const evalCode = new Function(
-    "exports",
-    "require",
-    "localStorage",
+  const evalCodeFunc = new Function(
+    'exports',
+    'require',
+    'localStorage',
     transformedCode,
   );
 
-  evalCode(
-    exportsObject,
-    requireFunc,
-    ScopedLocalStorage
-  )
+  try {
+    evalCodeFunc(
+      exportsObject,
+      requireFunc,
+      ScopedLocalStorage
+    );
+  } catch(error) {
+    console.log(error);
+    throw new Error(error);
+  }
 
-  console.log(exportsObject);
+  const { default: defaultComp, ...rest } = exportsObject;
 
-  fileManager["mdx-notes"][moduleName] = exportsObject.default;
-  fileManager["mdx-notes"] = { ...exportsObject, ...fileManager["mdx-notes"]  };
-
-  console.log(fileManager);
+  if (defaultComp) {
+    fileManager['mdx-notes'][moduleName] = defaultComp;
+  }
+  
+  fileManager['mdx-notes'] = { ...rest, ...fileManager['mdx-notes']  };
 }

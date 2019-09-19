@@ -13,17 +13,17 @@ export default class ErrorBoundary extends Component {
     };
   }
 
-  componentDidCatch(error, errorInfo) {
-    // You can also log the error to an error reporting service
-    console.error(error);
-  }
-
-  componentDidUpdate(prevProps, preState) {
+  componentDidUpdate(prevProps) {
     if (prevProps.resetCheck !== this.props.resetCheck) {
       this.setState({
         hasError: false,
-      })
+      });
     }
+  }
+
+  componentDidCatch(error, errorInfo) {
+    // You can also log the error to an error reporting service
+    console.error(error);
   }
 
   render() {
@@ -32,11 +32,11 @@ export default class ErrorBoundary extends Component {
     if (hasError && (!error || !error.message)) {
       // You can render any custom fallback UI
       return <h1>Something went wrong.</h1>;
-    } else if (hasError) {
+    } if (hasError) {
       return (
         <div>
           <pre>{error.toString()}</pre>
-          <pre style={{ whiteSpace: "pre-wrap" }}>{error.stack}</pre>
+          <pre style={{ whiteSpace: 'pre-wrap' }}>{error.stack}</pre>
         </div>
       );
     }
