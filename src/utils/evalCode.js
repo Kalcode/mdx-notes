@@ -37,5 +37,5 @@ export default function evalCode(code, moduleName) {
     fileManager['mdx-notes'][moduleName] = defaultComp;
   }
   
-  fileManager['mdx-notes'] = { ...rest, ...fileManager['mdx-notes']  };
+  fileManager['mdx-notes'] = { ...fileManager['mdx-notes'], ...rest  };
 }

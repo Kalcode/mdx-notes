@@ -8,10 +8,12 @@ import { fileManager } from './utils/fileManager';
 
 import evalCode from './utils/evalCode';
 import initialMDX from './components/MDXEditor/initialMDX';
-import initialSnippet from './components/SnippetEditor/initialSnippet';
 import { TranspiledComponents } from './components/Context/TranspiledComponents';
 import SnippetEditor from './components/SnippetEditor';
 
+require('codemirror/lib/codemirror.css');
+require('codemirror/mode/jsx/jsx');
+require('codemirror/mode/markdown/markdown');
 
 // evalCode(initialSnippet, 'Demo');
 

@@ -1,17 +1,18 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import "./goldenLayout-dependencies";
-import GoldenLayout from "golden-layout";
-import "golden-layout/src/css/goldenlayout-base.css";
-import "golden-layout/src/css/goldenlayout-light-theme.css";
-import $ from "jquery";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './goldenLayout-dependencies';
+import GoldenLayout from 'golden-layout';
+import 'golden-layout/src/css/goldenlayout-base.css';
+import 'golden-layout/src/css/goldenlayout-light-theme.css';
+import $ from 'jquery';
 
 export class GoldenLayoutComponent extends React.Component {
   state = {};
+
   containerRef = React.createRef();
 
   render() {
-    let panels = Array.from(this.state.renderPanels || []);
+    const panels = Array.from(this.state.renderPanels || []);
     return (
       <div ref={this.containerRef} {...this.props.htmlAttrs}>
         {panels.map((panel, index) => {
@@ -26,18 +27,21 @@ export class GoldenLayoutComponent extends React.Component {
 
   componentRender(reactComponentHandler) {
     this.setState(state => {
-      let newRenderPanels = new Set(state.renderPanels);
+      const newRenderPanels = new Set(state.renderPanels);
       newRenderPanels.add(reactComponentHandler);
       return { renderPanels: newRenderPanels };
     });
   }
+
   componentDestroy(reactComponentHandler) {
     this.setState(state => {
-      let newRenderPanels = new Set(state.renderPanels);
+      const newRenderPanels = new Set(state.renderPanels);
       newRenderPanels.delete(reactComponentHandler);
       return { renderPanels: newRenderPanels };
     });
   }
+
+  static goldenLayoutInstance = undefined;
 
   goldenLayoutInstance = undefined;
 
@@ -46,6 +50,9 @@ export class GoldenLayoutComponent extends React.Component {
       this.props.config || {},
       this.containerRef.current
     );
+
+    GoldenLayoutComponent.goldenLayoutInstance = this.goldenLayoutInstance;
+    
     if (this.props.registerComponents instanceof Function)
       this.props.registerComponents(this.goldenLayoutInstance);
 
@@ -53,43 +60,42 @@ export class GoldenLayoutComponent extends React.Component {
     this.goldenLayoutInstance.init();
 
     window.addEventListener('resize', () => {
-      console.log('test');
-
       this.goldenLayoutInstance.updateSize();
-    })
+    });
   }
 }
 
 
-//Patching internal GoldenLayout.__lm.utils.ReactComponentHandler:
+// Patching internal GoldenLayout.__lm.utils.ReactComponentHandler:
 
-const ReactComponentHandler = GoldenLayout["__lm"].utils.ReactComponentHandler;
+const {ReactComponentHandler} = GoldenLayout.__lm.utils;
 
 class ReactComponentHandlerPatched extends ReactComponentHandler {
   _render() {
-    var reactContainer = this._container.layoutManager.reactContainer; //Instance of GoldenLayoutComponent class
+    const {reactContainer} = this._container.layoutManager; // Instance of GoldenLayoutComponent class
     if (reactContainer && reactContainer.componentRender)
       reactContainer.componentRender(this);
   }
+
   _destroy() {
-    const reactContainer = this._container.layoutManager.reactContainer;
+    const {reactContainer} = this._container.layoutManager;
     if (reactContainer && reactContainer.componentDestroy) {
       reactContainer.componentDestroy(this);
     }
     
-    this._container.off("open", this._render, this);
-    this._container.off("destroy", this._destroy, this);
+    this._container.off('open', this._render, this);
+    this._container.off('destroy', this._destroy, this);
   }
 
   _getReactComponent() {
-    //the following method is absolute copy of the original, provided to prevent depenency on window.React
-    var defaultProps = {
+    // the following method is absolute copy of the original, provided to prevent depenency on window.React
+    const defaultProps = {
       glEventHub: this._container.layoutManager.eventHub,
       glContainer: this._container
     };
-    var props = $.extend(defaultProps, this._container._config.props);
+    const props = $.extend(defaultProps, this._container._config.props);
     return React.createElement(this._reactClass, props);
   }
 }
 
-GoldenLayout["__lm"].utils.ReactComponentHandler = ReactComponentHandlerPatched;
+GoldenLayout.__lm.utils.ReactComponentHandler = ReactComponentHandlerPatched;
