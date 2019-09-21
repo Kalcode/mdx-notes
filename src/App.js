@@ -59,6 +59,13 @@ function App() {
                   type: 'row',
                   content: [
                     {
+                      title: 'Files',
+                      type: 'react-component',
+                      component: 'FileExplorer',
+                      isClosable: false,
+                      width: 10,
+                    },
+                    {
                       type: 'column',
                       content: [
                         {
@@ -92,6 +99,13 @@ function App() {
               myLayout.registerComponent('MDXPreviewer', MDXPreviewer);
               myLayout.registerComponent('MDXEditor', MDXEditor);
               myLayout.registerComponent('SnippetEditor', SnippetEditor);
+              myLayout.registerComponent('FileExplorer', () => (
+                <div style={{ margin: '10 0', overflow: 'hidden' }}>
+                  <div>Test.snippet</div>
+                  <div style={{ background: 'lightblue' }}>Demo.snippet</div>
+                  <div>Filename.snippet</div>
+                </div>
+              ));
             }}
           />
         </TranspiledComponents.Provider>
