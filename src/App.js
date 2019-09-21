@@ -11,10 +11,6 @@ import initialMDX from './components/MDXEditor/initialMDX';
 import { TranspiledComponents } from './components/Context/TranspiledComponents';
 import SnippetEditor from './components/SnippetEditor';
 
-require('codemirror/lib/codemirror.css');
-require('codemirror/mode/jsx/jsx');
-require('codemirror/mode/markdown/markdown');
-
 // evalCode(initialSnippet, 'Demo');
 
 const initialComponents = {
@@ -38,6 +34,7 @@ function App() {
   const [ components, setComponents ] = useState(initialComponents);
   
   const updateSnippet = (code, namespace) => {
+    console.log(namespace);
     evalCode(code, namespace);
 
     setComponents({
@@ -53,6 +50,10 @@ function App() {
           <GoldenLayoutComponent // config from simple react example: https://golden-layout.com/examples/#qZXEyv
             htmlAttrs={{ style: { height: '100vh', width: '100%' } }}
             config={{
+              settings: {
+                showCloseIcon: false,
+                showPopoutIcon: false,
+              },
               content: [
                 {
                   type: 'row',
@@ -64,12 +65,14 @@ function App() {
                           title: 'Snippet',
                           type: 'react-component',
                           component: 'SnippetEditor',
+                          isClosable: false,
                           props: { updateSnippet: (value, namespace) => { updateSnippet(value, namespace); } }
                         },
                         {
                           title: 'MDX',
                           type: 'react-component',
                           component: 'MDXEditor',
+                          isClosable: false,
                           props: { updateMdx: (value) => { updateMdx(value); } }
                         },
                       ]
@@ -78,6 +81,7 @@ function App() {
                       title: 'Preview',
                       type: 'react-component',
                       component: 'MDXPreviewer',
+                      isClosable: false,
                       props: {  scope: scopeProp  }
                     }
                   ]

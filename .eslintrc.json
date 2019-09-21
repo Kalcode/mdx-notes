@@ -14,6 +14,7 @@
     "react/jsx-one-expression-per-line": "off",
     "react/forbid-prop-types": "off",
     "react/prop-types": ["error", { "skipUndeclared": true }],
+    "react/state-in-constructor": 0,
     "react/jsx-props-no-spreading": 0,
     "jsx-a11y/heading-has-content": 0,
     "semi": ["error", "always"],

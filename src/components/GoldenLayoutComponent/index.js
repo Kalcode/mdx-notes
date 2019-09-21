@@ -1,50 +1,23 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable no-underscore-dangle */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './goldenLayout-dependencies';
 import GoldenLayout from 'golden-layout';
 import 'golden-layout/src/css/goldenlayout-base.css';
 import 'golden-layout/src/css/goldenlayout-light-theme.css';
-import $ from 'jquery';
+
+import { ReactComponentHandlerPatched } from './ReactComponentHandlerPatched';
 
 export class GoldenLayoutComponent extends React.Component {
+  static goldenLayoutInstance = undefined;
+
   state = {};
 
   containerRef = React.createRef();
 
-  render() {
-    const panels = Array.from(this.state.renderPanels || []);
-    return (
-      <div ref={this.containerRef} {...this.props.htmlAttrs}>
-        {panels.map((panel, index) => {
-          return ReactDOM.createPortal(
-            panel._getReactComponent(),
-            panel._container.getElement()[0]
-          );
-        })}
-      </div>
-    );
-  }
-
-  componentRender(reactComponentHandler) {
-    this.setState(state => {
-      const newRenderPanels = new Set(state.renderPanels);
-      newRenderPanels.add(reactComponentHandler);
-      return { renderPanels: newRenderPanels };
-    });
-  }
-
-  componentDestroy(reactComponentHandler) {
-    this.setState(state => {
-      const newRenderPanels = new Set(state.renderPanels);
-      newRenderPanels.delete(reactComponentHandler);
-      return { renderPanels: newRenderPanels };
-    });
-  }
-
-  static goldenLayoutInstance = undefined;
-
-  goldenLayoutInstance = undefined;
-
+  goldenLayoutInstance;
+ 
   componentDidMount() {
     this.goldenLayoutInstance = new GoldenLayout(
       this.props.config || {},
@@ -63,38 +36,37 @@ export class GoldenLayoutComponent extends React.Component {
       this.goldenLayoutInstance.updateSize();
     });
   }
-}
 
-
-// Patching internal GoldenLayout.__lm.utils.ReactComponentHandler:
-
-const {ReactComponentHandler} = GoldenLayout.__lm.utils;
-
-class ReactComponentHandlerPatched extends ReactComponentHandler {
-  _render() {
-    const {reactContainer} = this._container.layoutManager; // Instance of GoldenLayoutComponent class
-    if (reactContainer && reactContainer.componentRender)
-      reactContainer.componentRender(this);
+  componentRender(reactComponentHandler) {
+    this.setState(state => {
+      const newRenderPanels = new Set(state.renderPanels);
+      newRenderPanels.add(reactComponentHandler);
+      return { renderPanels: newRenderPanels };
+    });
   }
 
-  _destroy() {
-    const {reactContainer} = this._container.layoutManager;
-    if (reactContainer && reactContainer.componentDestroy) {
-      reactContainer.componentDestroy(this);
-    }
-    
-    this._container.off('open', this._render, this);
-    this._container.off('destroy', this._destroy, this);
+
+  componentDestroy(reactComponentHandler) {
+    this.setState(state => {
+      const newRenderPanels = new Set(state.renderPanels);
+      newRenderPanels.delete(reactComponentHandler);
+      return { renderPanels: newRenderPanels };
+    });
   }
 
-  _getReactComponent() {
-    // the following method is absolute copy of the original, provided to prevent depenency on window.React
-    const defaultProps = {
-      glEventHub: this._container.layoutManager.eventHub,
-      glContainer: this._container
-    };
-    const props = $.extend(defaultProps, this._container._config.props);
-    return React.createElement(this._reactClass, props);
+
+  render() {
+    const panels = Array.from(this.state.renderPanels || []);
+    return (
+      <div ref={this.containerRef} {...this.props.htmlAttrs}>
+        {panels.map((panel) => {
+          return ReactDOM.createPortal(
+            panel._getReactComponent(),
+            panel._container.getElement()[0]
+          );
+        })}
+      </div>
+    );
   }
 }
 
